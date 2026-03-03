@@ -1,18 +1,28 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import History from "../components/History"
 
 export default function Home() {
     const [search, setSearch] = useState()
-    const baseUrl = `http://www.omdbapi.com/?apikey=`
+    const storedHistory = localStorage.getItem("search")
+    const [focused, setFocused] = useState(false)
+    const [history, setHistory] = useState(storedHistory ? JSON.parse(storedHistory) : [])
 
-    //Ikke gjør sånn
-    const apiKey = 'ce066fee'
+
+    const baseUrl = `http://www.omdbapi.com/?s=${search}&apikey=`
+    //gjør sånn
+    const apiKey = import.meta.env.VITE_APP_API_KEY
+
+    useEffect(() => {
+        localStorage.setItem("search", JSON.stringify(history))
+
+    }
+        , [history])
 
     const getMovies = async () => {
         try {
-            const response = await fetch(`${baseUrl}${apiKey}&s=${search}`)
+            const response = await fetch(`${baseUrl}${apiKey}`)
             const data = await response.json()
             console.log(data)
-
         }
         catch (err) {
             console.error(err);
@@ -23,15 +33,30 @@ export default function Home() {
         setSearch(e.target.value)
     }
 
-    return (<main>
-        <h1>Forside</h1>
-        <form>
-            <label>
-                Søk etter film
-                <input type="search" placeholder="Harry Potter" onChange={handleChange}></input>
-            </label>
-        </form>
-        <button onClick={getMovies}>Søk </button>
-    </main>
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        e.target.reset()
+
+        setHistory((prev) => [...prev, search])
+
+
+    }
+
+    return (
+        <main>
+            <h1>Forside</h1>
+            <form onSubmit={handleSubmit}>
+                <label>
+                    Søk etter film:
+                    <input type="search" placeholder="Harry Potter" onChange={handleChange} onFocus={() => setFocused(true)} /*onBlur={() => setFocused(false)}*/></input>
+                </label>
+                {focused ?
+                    <History history={history} setSearch={setSearch} /> : null}
+                <button onClick={getMovies}>Søk</button>
+
+            </form>
+
+        </main>
+
     )
 }

@@ -7,7 +7,7 @@ import Home from './pages/Home'
 import Movie from './pages/Movie'
 
 function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
     <Routes>
