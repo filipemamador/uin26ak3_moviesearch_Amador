@@ -45,6 +45,7 @@ export default function Home() {
     return (
         <main>
             <h1>Forside</h1>
+
             <form onSubmit={handleSubmit}>
                 <label>
                     Søk etter film:
@@ -55,7 +56,6 @@ export default function Home() {
                 <button onClick={getMovies}>Søk</button>
 
             </form>
-
         </main>
 
     )
