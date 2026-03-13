@@ -43,11 +43,20 @@ export default function Home() {
     const handleChange = (e) => {
         const value = e.target.value
         setSearch(value)
+        //if tester for søkefeltet
 
-        if (value.length >= 4) {
+        if (value.length === 0) { //viser ingenting hvis søkefeltet er tom
+            setError("")
+            setMovies([])
+            return
+        }
+        if (value.length >= 4) { //Søker kun når brukerene tastetr inn 4 eller flere tegn
             setError("")
             getMovies(value)
-        } else {
+
+        }
+
+        else {
             setError("Du må skrive minst 4 tegn")
             setMovies([])
         }
@@ -97,9 +106,14 @@ export default function Home() {
             </header>
             <main>
                 {error && <p>{error}</p>}
-                {movies.map(movie => (<MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />))}
-                {bondMovies.map(movie => (<MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />))}
-
+                {movies.length > 0
+                    ? movies.map(movie => (
+                        <MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />
+                    ))
+                    : bondMovies.map(movie => (
+                        <MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />
+                    ))
+                }
             </main>
         </>
     )
