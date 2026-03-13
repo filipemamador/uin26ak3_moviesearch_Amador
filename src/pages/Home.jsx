@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react"
 import History from "../components/History"
+import MovieCard from "../components/MovieCard"
+import Search from "../components/SearchForm"
+import Movies from "./Movies"
+
 
 export default function Home() {
     const [search, setSearch] = useState()
     const storedHistory = localStorage.getItem("search")
     const [focused, setFocused] = useState(false)
     const [history, setHistory] = useState(storedHistory ? JSON.parse(storedHistory) : [])
+    const [bondMovies, setBondMovies] = useState([])
+    const [movies, setMovies] = useState([])
+    const [error, setError] = useState("")
 
-
+    /* Dette fikk vi fra forelesningen*/
     const baseUrl = `http://www.omdbapi.com/?s=${search}&apikey=`
     //gjør sånn
     const apiKey = import.meta.env.VITE_APP_API_KEY
@@ -22,16 +29,31 @@ export default function Home() {
         try {
             const response = await fetch(`${baseUrl}${apiKey}`)
             const data = await response.json()
-            console.log(data)
+            // console.log(data)
+            if (data.Search) {
+                setMovies(data.Search)
+            } else { setMovies([]) }
         }
         catch (err) {
             console.error(err);
         }
     }
 
+
     const handleChange = (e) => {
-        setSearch(e.target.value)
+        const value = e.target.value
+        setSearch(value)
+
+        if (value.length >= 4) {
+            setError("")
+            getMovies(value)
+        } else {
+            setError("Du må skrive minst 4 tegn")
+            setMovies([])
+        }
     }
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -41,22 +63,44 @@ export default function Home() {
 
 
     }
+    //Få ut alle bond filmer
+    const getBondMovies = async () => {
+        //Jeg fikk ikke til å funke ved å bruke baseUrl så gjorde jeg på denne måtten som jeg fikk fra chatGPT
+        const response = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=James Bond&type=movie`)
+        const data = await response.json()
+
+        if (data.Search) {
+            setBondMovies(data.Search)
+        }
+
+    }
+    useEffect(() => {
+        getBondMovies()
+    }, [])
+
+
 
     return (
-        <main>
-            <h1>Home</h1>
+        <>
+            <header>
+                <h1>Home</h1>
 
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Søk etter film:
-                    <input type="search" placeholder="Harry Potter" onChange={handleChange} onFocus={() => setFocused(true)} /*onBlur={() => setFocused(false)}*/></input>
-                </label>
-                {focused ?
-                    <History history={history} setSearch={setSearch} /> : null}
-                <button onClick={getMovies}>Søk</button>
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        Søk etter film:
+                        <input type="search" placeholder="Harry Potter" onChange={handleChange} onFocus={() => setFocused(true)} /*onBlur={() => setFocused(false)}*/></input>
+                    </label>
+                    {focused ?
+                        <History history={history} setSearch={setSearch} /> : null}
+                    <button onClick={getMovies}>Søk</button>
+                </form>
+            </header>
+            <main>
+                {error && <p>{error}</p>}
+                {movies.map(movie => (<MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />))}
+                {bondMovies.map(movie => (<MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />))}
 
-            </form>
-        </main>
-
+            </main>
+        </>
     )
 }
