@@ -3,6 +3,8 @@ import MovieCard from "../components/MovieCard";
 
 export default function Movies() {
 
+    //Dette var mitt forsøk å lage et eget side hvor det skulle vises alle filmene, men på grunn av dårlig tid, bestemt jeg å prioritere selv oppgaven, så fikk jeg bare ut første siden av apien.
+
     const [movies, setMovies] = useState([])
     const apiKey = import.meta.env.VITE_APP_API_KEY
 

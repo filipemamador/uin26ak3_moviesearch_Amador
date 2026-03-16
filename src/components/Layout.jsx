@@ -12,3 +12,4 @@ export default function Layout({ children }) {
         </>
     )
 }
+// Basically copiert fra Rick and Morty whorkshop

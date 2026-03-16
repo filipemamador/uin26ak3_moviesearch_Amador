@@ -15,7 +15,7 @@ export default function Home() {
     const [error, setError] = useState("")
 
     /* Dette fikk vi fra forelesningen*/
-    const baseUrl = `http://www.omdbapi.com/?s=${search}&apikey=`
+    const baseUrl = `http://www.omdbapi.com/?&apikey=`
     //gjør sånn
     const apiKey = import.meta.env.VITE_APP_API_KEY
 
@@ -25,9 +25,9 @@ export default function Home() {
     }
         , [history])
 
-    const getMovies = async () => {
+    const getMovies = async (search) => {
         try {
-            const response = await fetch(`${baseUrl}${apiKey}`)
+            const response = await fetch(`${baseUrl}${apiKey}&s=${search}`)
             const data = await response.json()
             // console.log(data)
             if (data.Search) {
@@ -50,14 +50,14 @@ export default function Home() {
             setMovies([])
             return
         }
-        if (value.length >= 4) { //Søker kun når brukerene tastetr inn 4 eller flere tegn
+        if (value.length >= 3) { //Søker kun når brukerene taster inn 3 eller flere tegn
             setError("")
             getMovies(value)
 
         }
 
         else {
-            setError("Du må skrive minst 4 tegn")
+            setError("Du må skrive minst 3 tegn")
             setMovies([])
         }
     }
@@ -93,7 +93,7 @@ export default function Home() {
         <>
             <header>
                 <h1>Home</h1>
-
+                {/*Søkefeltet vi fikk fra forelesning*/}
                 <form onSubmit={handleSubmit}>
                     <label>
                         Søk etter film:
@@ -106,9 +106,9 @@ export default function Home() {
             </header>
             <main>
                 {error && <p>{error}</p>}
-                {movies.length > 0
+                {movies.length > 0 //Viser kun bond movies eller det som står på søkefeltet
                     ? movies.map(movie => (
-                        <MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />
+                        <MovieCard key={movie.Title} title={movie.Title} year={movie.Year} poster={movie.Poster} />
                     ))
                     : bondMovies.map(movie => (
                         <MovieCard key={movie.imdbID} title={movie.Title} year={movie.Year} poster={movie.Poster} />
@@ -118,3 +118,5 @@ export default function Home() {
         </>
     )
 }
+
+//Kode forbedring fra chatGPT https://chatgpt.com/share/69b74af0-704c-800a-a030-c3d553a58acb

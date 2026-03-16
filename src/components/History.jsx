@@ -10,3 +10,4 @@ export default function History({ history, setSearch }) {
         </select >
     )
 }
+// Fra forelesnig
